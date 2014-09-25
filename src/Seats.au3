@@ -5,6 +5,7 @@
 #include <WindowsConstants.au3>
 #include <MsgBoxConstants.au3>
 
+_Initialize()
 _GUIMain()
 
 Func _GUIMain()
@@ -51,10 +52,13 @@ Func _GUIMain()
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
+				GUISetState(@SW_DISABLE,$SeatsMain)
 				$intMessage = MsgBox(BitOR($MB_ICONINFORMATION, 65), "Are you sure?", "Are you sure you would like to exit seats?")
 				If $intMessage = 1 Then
 					Exit 0
 				EndIf
+				GUISetState(@SW_ENABLE,$SeatsMain)
+				WinActivate($SeatsMain)
 			Case $Button1
 				GUISetState(@SW_DISABLE, $SeatsMain)
 				_OptionsGUI()
@@ -70,9 +74,9 @@ Func _GUIMain()
 EndFunc   ;==>_GUIMain
 
 Func _OptionsGUI()
-	#Region Source=C:\Users\Austen\Desktop\SeatsOptions.kxf
+	#Region Form=C:\Users\Austen\Desktop\SeatsOptions.kxf
 	Global $SeatsOptions = GUICreate("Seats - Options", 488, 122, 700, 471)
-	Global $Checkbox1 = GUICtrlCreateCheckbox("AutoUpdates", 0, 0, 84, 17)
+	Global $Checkbox112 = GUICtrlCreateCheckbox("AutoUpdates", 0, 0, 84, 17)
 	GUICtrlSetState(-1, $GUI_CHECKED)
 	Global $Button10 = GUICtrlCreateButton("Reset to Defaults", 397, 0, 89, 28)
 	Global $Button11 = GUICtrlCreateButton("Cancel", 272, 88, 73, 33)
@@ -82,19 +86,27 @@ Func _OptionsGUI()
 	Global $Input10 = GUICtrlCreateInput("Input1", 115, 22, 197, 21)
 	Global $Button14 = GUICtrlCreateButton("...", 313, 28, 39, 16)
 	GUISetState(@SW_SHOW)
-	#EndRegion Source=C:\Users\Austen\Desktop\SeatsOptions.kxf
+	#EndRegion Form=C:\Users\Austen\Desktop\SeatsOptions.kxf
+
+	GUICtrlSetData($Input10, RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir"))
+
+	If RegRead("HKEY_CURRENT_USER\Software\Seats", "AutoUpdate") = "false" Then
+		GUICtrlSetState($Checkbox112, $GUI_UNCHECKED)
+	EndIf
 
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
 				GUIDelete($SeatsOptions)
-				Return
+				ExitLoop
 			Case $Button11
 				GUIDelete($SeatsOptions)
-				Return
+				ExitLoop
 			Case $Button12
+				GUICtrlSetState($Input10, $GUI_DISABLE)
+				GUICtrlSetState($Checkbox112, $GUI_DISABLE)
 				_ApplyOptions()
-				Return
+				ExitLoop
 		EndSwitch
 	WEnd
 	Return
@@ -123,7 +135,7 @@ Func _AboutGUI()
 				GUIDelete($AboutMain)
 				ExitLoop
 			Case $Button68
-				ShellExecute("http://github.com/vortexoxide/seats")
+				ShellExecute("http://github.com/vortexoxide/")
 			Case $Button198798
 				GUIDelete($AboutMain)
 				ExitLoop
@@ -132,8 +144,18 @@ Func _AboutGUI()
 	Return
 EndFunc   ;==>_AboutGUI
 
+Func _Initialize()
+	If RegRead("HKEY_CURRENT_USER\Software\Seats", "FirstRun") = "true" Then
+		Return
+	Else
+		MsgBox($MB_ICONINFORMATION,"Welcome!","Welcome, it looks like it is your first time running seats. If you need help please click the 'help' button in the top left corner.")
+		RegWrite("HKEY_CURRENT_USER\Software\Seats", "FirstRun", "REG_SZ", "true")
+		MsgBox(0, "", RegRead("HKEY_CURRENT_USER\Software\Seats", "FirstRun"))
+	EndIf
+EndFunc   ;==>_Initialize
 Func _ApplyOptions()
-	;;Apply new options
+	RegWrite("HKEY_CURRENT_USER\Software\Seats", "BrowseDir", "REG_SZ", GUICtrlRead($Input10))
+	RegWrite("HKEY_CURRENT_USER\Software\Seats", "BrowseDir", "REG_SZ", @MyDocumentsDir)
 	GUIDelete($SeatsOptions)
 	Return
 EndFunc   ;==>_ApplyOptions
