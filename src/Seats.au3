@@ -37,7 +37,7 @@ Func _GUIMain()
 	Global $Input2 = GUICtrlCreateInput("", 248, 72, 25, 21)
 	GUICtrlSetCursor(-1, 5)
 	Global $Label5 = GUICtrlCreateLabel("x", 234, 79, 9, 17)
-	GUICtrlCreateEdit("", 334, 73, 161, 384)
+	Global $Edit1 = GUICtrlCreateEdit("", 334, 73, 161, 384)
 	GUICtrlSetData(-1, "")
 	GUICtrlSetState(-1, $GUI_HIDE)
 	Global $Button4 = GUICtrlCreateButton("Name File", 1, 416, 71, 25)
@@ -52,13 +52,40 @@ Func _GUIMain()
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
+			If RegRead("HKEY_CURRENT_USER\Software\Seats","ExitGUI") <> "true" Then
 				GUISetState(@SW_DISABLE,$SeatsMain)
-				$intMessage = MsgBox(BitOR($MB_ICONINFORMATION, 65), "Are you sure?", "Are you sure you would like to exit seats?")
-				If $intMessage = 1 Then
-					Exit 0
-				EndIf
+				#Region
+				$ExitGUI = GUICreate("Are You Sure?", 316, 254, 346, 262)
+				GUICtrlCreateGroup("", 9, 1, 297, 193)
+				$Label1908 = GUICtrlCreateLabel("Are you sure you would like to exit Seats?", 66, 88, 200, 17)
+				GUICtrlCreateGroup("", -99, -99, 1, 1)
+				$Button12344 = GUICtrlCreateButton("&Yes", 73, 203, 75, 25)
+				$Button234234 = GUICtrlCreateButton("&No", 178, 203, 75, 25)
+				$Checkbox1998 = GUICtrlCreateCheckbox("Don't ask me again", 0, 232, 113, 17)
+				GUISetState(@SW_SHOW)
+				#EndRegion
+
+				While 1
+					Switch GUIGetMsg()
+						Case $GUI_EVENT_CLOSE
+							ExitLoop
+						Case $Button12344
+							Exit 0
+						Case $Button234234
+							ExitLoop
+						Case $Checkbox1998
+							If GUICtrlRead($Checkbox1998) = $GUI_CHECKED Then
+								RegWrite("HKEY_CURRENT_USER\Software\Seats", "ExitGUI", "REG_SZ", "true")
+							Else
+								RegWrite("HKEY_CURRENT_USER\Software\Seats", "ExitGUI", "REG_SZ", "false")
+							EndIf
+					EndSwitch
+				WEnd
 				GUISetState(@SW_ENABLE,$SeatsMain)
 				WinActivate($SeatsMain)
+				Else
+				Return
+				EndIf
 			Case $Button1
 				GUISetState(@SW_DISABLE, $SeatsMain)
 				_OptionsGUI()
@@ -69,6 +96,10 @@ Func _GUIMain()
 				_AboutGUI()
 				GUISetState(@SW_ENABLE, $SeatsMain)
 				WinActivate($SeatsMain)
+			Case $Radio2
+				GUICtrlSetState($Edit1,$GUI_SHOW)
+			Case $Radio1
+				GUICtrlSetState($Edit1,$GUI_HIDE)
 		EndSwitch
 	WEnd
 EndFunc   ;==>_GUIMain
