@@ -488,9 +488,15 @@ Func _HideDesks($iHorizontle, $iVertical)
 	;Horizontle Switch
 	Switch $iHorizontle
 		Case "1"
-			
-
-
-
-
+			For $i = 1 to 9
+				GUICtrlSetState($FormGroup[1][$i],$GUI_HIDE)
+				GUICtrlSetState($FormGroup[2][$i],$GUI_HIDE)
+				GUICtrlSetState($FormGroup[3][$i],$GUI_HIDE)
+				GUICtrlSetState($FormGroup[4][$i],$GUI_HIDE)
+				GUICtrlSetState($FormGroup[6][$i],$GUI_HIDE)
+				GUICtrlSetState($FormGroup[7][$i],$GUI_HIDE)
+				GUICtrlSetState($FormGroup[8][$i],$GUI_HIDE)
+				GUICtrlSetState($FormGroup[9][$i],$GUI_HIDE)
+				$FormCount[$i][$i] = GUICtrlGetState()
+			Next
 EndFunc   ;==>_HideDesks
