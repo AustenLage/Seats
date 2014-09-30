@@ -15,8 +15,9 @@
 #include <WindowsConstants.au3>
 #include <MsgBoxConstants.au3>
 #include <Array.au3>
+#include <Random.au3>
 
-Global $FormGroup[10][10], $FormCount[10][10]
+Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82]
 
 _Initialize()
 _GUIMain()
@@ -308,8 +309,8 @@ Func _FormGUI()
 	GUISetState(@SW_SHOW)
 	#EndRegion ### END Koda GUI section ###
 
-	$Horizontle = GUICtrlRead($Input1098098)
-	$Vertical = GUICtrlRead($Input87877)
+	Global $Horizontle = GUICtrlRead($Input1098098)
+	Global $Vertical = GUICtrlRead($Input87877)
 
 	_HideDesksV($Vertical, $Horizontle)
 
@@ -447,7 +448,7 @@ Func _SizeChart()
 	EndSwitch
 EndFunc   ;==>_SizeChart
 
-Func _HideDesksV($iVertical, $iHorizontle)
+Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $iHorizontal to the horizontal hiding function
 	;Horizontle Switch
 	Switch $iVertical
 		Case "1"
@@ -542,8 +543,8 @@ Func _HideDesksV($iVertical, $iHorizontle)
 	EndSwitch
 EndFunc   ;==>_HideDesksV
 
-Func _HideDesksH($iHorizontle)
-	Switch $iHorizontle
+Func _HideDesksH($iHorizontal) ;Hides desks horizontally
+	Switch $iHorizontal
 		Case "1"
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[$i][1], $GUI_HIDE)
@@ -609,7 +610,7 @@ Func _HideDesksH($iHorizontle)
 	EndSwitch
 EndFunc   ;==>_HideDesksH
 
-Func _DeskGetState($i)
+Func _DeskGetState($i) ;Returns a coordinate array containing the state of each group control, so I can determine which seats to actually give a number or name to.
 	$FormCount[1][$i] = GUICtrlGetState($FormGroup[1][$i])
 	$FormCount[2][$i] = GUICtrlGetState($FormGroup[2][$i])
 	$FormCount[3][$i] = GUICtrlGetState($FormGroup[3][$i])
@@ -620,6 +621,65 @@ Func _DeskGetState($i)
 	$FormCount[8][$i] = GUICtrlGetState($FormGroup[8][$i])
 	$FormCount[9][$i] = GUICtrlGetState($FormGroup[9][$i])
 EndFunc   ;==>_DeskGetState
+
+Func _CountSeats() ;Gets total number of open seats on seating chart
+	For $i = 1 To 9
+		If $FormCount[1][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[2][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[3][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[4][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[5][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[6][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[7][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[8][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+		For $i = 1 To 9
+		If $FormCount[9][$i] = 80 Then
+			$iOpenSeats = $iOpenSeats + 1
+		EndIf
+	Next
+	Return $iOpenSeats
+EndFunc
+
+Func _FillChart($sOption) ;$iOption (Names or Numbers)
+	If $sOption = "numbers" Then
+		$iSeats = _CountSeats()
+		$aStudentNumbers = _RandomUnique($iSeats, 0, $iSeats + 1, 1)
+		For $i = 1 to 9
+			If $FormCount[1][$i] = "80" Then
+		Next
+	EndIf	
+EndFunc
 
 Func _DebugMsgBox($sText)
 	MsgBox(0, "Debug", $sText)
