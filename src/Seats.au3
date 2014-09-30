@@ -1,3 +1,13 @@
+#cs ----------------------------------------------------------------------------
+
+	AutoIt Version: 3.3.10.2
+	Author:         Austen Lage
+
+	Script Function:
+	Generate Seating Chart
+
+#ce ----------------------------------------------------------------------------
+
 #include <ButtonConstants.au3>
 #include <EditConstants.au3>
 #include <GUIConstantsEx.au3>
@@ -167,7 +177,7 @@ Func _FormGUI()
 	GUICtrlSetFont(-1, 8, 400, 0, "Arial")
 	$FormGroup[3][7] = GUICtrlCreateGroup("Group3,7", 590, 145, 97, 55, BitOR($GUI_SS_DEFAULT_GROUP, $BS_CENTER), $WS_EX_TRANSPARENT)
 	GUICtrlSetFont(-1, 8, 400, 0, "Arial")
-	$FormGroup[3][9] = GUICtrlCreateGroup("3,9", 782, 145, 97, 55, BitOR($GUI_SS_DEFAULT_GROUP, $BS_CENTER), $WS_EX_TRANSPARENT)
+	$FormGroup[3][9] = GUICtrlCreateGroup("Group3,9", 782, 145, 97, 55, BitOR($GUI_SS_DEFAULT_GROUP, $BS_CENTER), $WS_EX_TRANSPARENT)
 	GUICtrlSetFont(-1, 8, 400, 0, "Arial")
 	$FormGroup[3][2] = GUICtrlCreateGroup("Group3,2", 110, 145, 97, 55, BitOR($GUI_SS_DEFAULT_GROUP, $BS_CENTER), $WS_EX_TRANSPARENT)
 	GUICtrlSetFont(-1, 8, 400, 0, "Arial")
@@ -303,6 +313,7 @@ Func _FormGUI()
 
 	_HideDesksV($Vertical, $Horizontle)
 
+	_ArrayDisplay($FormCount)
 
 	While 1
 		Switch GUIGetMsg()
@@ -524,6 +535,9 @@ Func _HideDesksV($iVertical, $iHorizontle)
 			Next
 		Case "9"
 			_HideDesksH($iHorizontle)
+			For $i = 1 To 9
+				_DeskGetState($i)
+			Next
 			Return
 	EndSwitch
 EndFunc   ;==>_HideDesksV
