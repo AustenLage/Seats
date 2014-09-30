@@ -15,9 +15,9 @@
 #include <WindowsConstants.au3>
 #include <MsgBoxConstants.au3>
 #include <Array.au3>
-#include <Random.au3>
+#include <_Random.au3>
 
-Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82]
+Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82], $bError
 
 _Initialize()
 _GUIMain()
@@ -121,6 +121,8 @@ EndFunc   ;==>_GUIMain
 
 
 Func _FormGUI()
+	$bError = 0
+	$Timer = TimerInit()
 	#Region ### START Koda GUI section ### Form=C:\Users\Austen\Desktop\FormGUI.kxf
 	Global $FormGUI = GUICreate("Seating Chart", 896, 575, 348, 135, BitOR($GUI_SS_DEFAULT_GUI, $WS_SIZEBOX, $WS_THICKFRAME), $WS_EX_WINDOWEDGE)
 	Global $MenuItem1 = GUICtrlCreateMenu("&File")
@@ -309,12 +311,16 @@ Func _FormGUI()
 	GUISetState(@SW_SHOW)
 	#EndRegion ### END Koda GUI section ###
 
-	Global $Horizontle = GUICtrlRead($Input1098098)
-	Global $Vertical = GUICtrlRead($Input87877)
+	Global $Horizontle = GUICtrlRead($Input87877)
+	Global $Vertical = GUICtrlRead($Input1098098)
 
 	_HideDesksV($Vertical, $Horizontle)
 
-	_ArrayDisplay($FormCount)
+	;_ArrayDisplay($FormCount) - Debug
+
+	_FillChart("numbers")
+
+	ConsoleWrite(Int(TimerDiff($Timer)) & @CRLF) ;Write form creation speed to console/STDout Stream
 
 	While 1
 		Switch GUIGetMsg()
@@ -340,6 +346,11 @@ Func _FormGUI()
 					ExitLoop
 				EndIf
 		EndSwitch
+
+		If $bError = 1 Then
+			GUIDelete($FormGUI)
+			ExitLoop
+		EndIf
 	WEnd
 
 EndFunc   ;==>_FormGUI
@@ -391,7 +402,7 @@ Func _AboutGUI()
 	GUICtrlSetColor(-1, 0x000000)
 	Global $Button68 = GUICtrlCreateButton("http://github.com/VortexOxide", 224, 56, 177, 33)
 	GUICtrlSetColor(-1, 0x0000FF)
-	GUICtrlSetTip(-1, "Go to Vort3chs' GitHub")
+	GUICtrlSetTip(-1, "Go to Vortex's GitHub")
 	Global $Label1098 = GUICtrlCreateLabel("please contact me via issue, or pull request on my GitHub! I am also available at austenlage98@hotmail.com", 30, 115, 564, 19, $SS_CENTER)
 	GUICtrlSetColor(-1, 0x000000)
 	Global $Button198798 = GUICtrlCreateButton("Close", 262, 151, 100, 25)
@@ -437,7 +448,10 @@ Func _ApplyOptions()
 	Return
 EndFunc   ;==>_ApplyOptions
 
-Func _HandleError($sFunction, $iError, $iExtended)
+Func _HandleError($sFunction, $sError)
+	MsgBox($MB_ICONERROR, "SWEARING!", "The Gerbils didn't like that! :(" & @CRLF & @CRLF & _
+			"Function: " & $sFunction & @CRLF & @CRLF & _
+			"Description: " & $sError)
 	;;Error handling and logging, possibly send to google doc automatically?
 EndFunc   ;==>_HandleError
 
@@ -540,6 +554,10 @@ Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $i
 				_DeskGetState($i)
 			Next
 			Return
+		Case Else
+			$bError = 1
+			_HandleError("_SizeChartV", "The maximum chart size is 9x9!")
+			Return
 	EndSwitch
 EndFunc   ;==>_HideDesksV
 
@@ -607,6 +625,10 @@ Func _HideDesksH($iHorizontal) ;Hides desks horizontally
 			Next
 		Case "9"
 			Return
+		Case Else
+			$bError = 1
+			_HandleError("_SizeChartH", "The maximum chart size is 9x9!")
+			Return
 	EndSwitch
 EndFunc   ;==>_HideDesksH
 
@@ -623,63 +645,102 @@ Func _DeskGetState($i) ;Returns a coordinate array containing the state of each 
 EndFunc   ;==>_DeskGetState
 
 Func _CountSeats() ;Gets total number of open seats on seating chart
+	Local $iOpenSeats
+
 	For $i = 1 To 9
 		If $FormCount[1][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[2][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[3][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[4][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[5][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[6][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[7][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[8][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
-		For $i = 1 To 9
+	For $i = 1 To 9
 		If $FormCount[9][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
 		EndIf
 	Next
 	Return $iOpenSeats
-EndFunc
+EndFunc   ;==>_CountSeats
 
-Func _FillChart($sOption) ;$iOption (Names or Numbers)
+Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 	If $sOption = "numbers" Then
 		$iSeats = _CountSeats()
-		$aStudentNumbers = _RandomUnique($iSeats, 0, $iSeats + 1, 1)
-		For $i = 1 to 9
+		$aStudentNumbers = _RandomUnique($iSeats, 1, $iSeats, 1)
+		Local $SetCount = 1
+		For $i = 1 To 9
 			If $FormCount[1][$i] = "80" Then
+				GUICtrlSetData($FormGroup[1][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[2][$i] = "80" Then
+				GUICtrlSetData($FormGroup[2][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[3][$i] = "80" Then
+				GUICtrlSetData($FormGroup[3][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[4][$i] = "80" Then
+				GUICtrlSetData($FormGroup[4][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[5][$i] = "80" Then
+				GUICtrlSetData($FormGroup[5][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[6][$i] = "80" Then
+				GUICtrlSetData($FormGroup[6][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[7][$i] = "80" Then
+				GUICtrlSetData($FormGroup[7][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[8][$i] = "80" Then
+				GUICtrlSetData($FormGroup[8][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
+			If $FormCount[9][$i] = "80" Then
+				GUICtrlSetData($FormGroup[9][$i], $aStudentNumbers[$SetCount])
+				$SetCount = $SetCount + 1
+			EndIf
 		Next
-	EndIf	
-EndFunc
+		$SetCount = 1
+	EndIf
+EndFunc   ;==>_FillChart
 
 Func _DebugMsgBox($sText)
 	MsgBox(0, "Debug", $sText)
