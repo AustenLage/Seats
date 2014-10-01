@@ -23,44 +23,51 @@ _Initialize()
 _GUIMain()
 
 Func _GUIMain()
-	#Region ### Source=C:\Users\Austen\Desktop\SeatsMain.kxf
-	Global $SeatsMain = GUICreate("Seats - A seating chart generator for Mrs. Potter", 498, 443, 348, 219)
-	GUISetBkColor(0xC0C0C0)
-	Global $Group1 = GUICtrlCreateGroup("", 409, -9, 114, 33)
-	Global $Button98776576 = GUICtrlCreateButton("Options", 415, 0, 42, 17)
-	Global $Button2 = GUICtrlCreateButton("About", 459, 0, 41, 17)
+	ConsoleWrite('@@ (25) :(' & @MIN & ':' & @SEC & ') _GUIMain()' & @CR) ;### Function Trace
+	#Region ### START Koda GUI section ### Form=C:\Users\Austen\Desktop\SeatsMain.kxf
+	Global $SeatsMain = GUICreate("Seats - A seating chart generator for Mrs. Potter", 504, 443, 348, 219)
+	GUISetBkColor(0xF0F0F0)
+	Global $Group1 = GUICtrlCreateGroup("", 417, -9, 114, 33)
+	Global $Button98776576 = GUICtrlCreateButton("Options", 423, 0, 42, 17)
+	Global $Button2 = GUICtrlCreateButton("About", 467, 0, 41, 17)
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	Global $Group2 = GUICtrlCreateGroup("Group2", -11, -18, 57, 41)
 	Global $Button3 = GUICtrlCreateButton("Help", -2, 0, 41, 17)
+	GUICtrlSetState(-1, $GUI_DISABLE)
 	GUICtrlSetCursor(-1, 0)
-	Global $Radio1 = GUICtrlCreateRadio("Numbers", 163, 19, 64, 26)
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
+	Global $Radio1 = GUICtrlCreateRadio("Numbers", 171, 128, 64, 18)
 	GUICtrlSetState(-1, $GUI_CHECKED)
 	GUICtrlSetCursor(-1, 0)
-	Global $Radio2 = GUICtrlCreateRadio("Names", 250, 19, 55, 26)
+	Global $Radio2 = GUICtrlCreateRadio("Names", 267, 128, 55, 18)
 	GUICtrlSetCursor(-1, 0)
-	Global $Label1 = GUICtrlCreateLabel("*Would you like to generate a seating chart with:", 118, 0, 233, 17)
-	GUICtrlSetColor(-1, 0x0000FF)
-	Global $Label2 = GUICtrlCreateLabel("or", 230, 24, 15, 17)
-	Global $Label3 = GUICtrlCreateLabel("*Dimensions:", 206, 48, 65, 17)
+	Global $Label2 = GUICtrlCreateLabel("or", 241, 130, 15, 17)
+	Global $Label3 = GUICtrlCreateLabel("*Dimensions:", 211, 151, 65, 17)
 	GUICtrlSetColor(-1, 0x0000FF)
 	Global $Label4 = GUICtrlCreateLabel("* = Required Field", 414, 32, 88, 17)
 	GUICtrlSetColor(-1, 0xFF0000)
-	Global $Input1098098 = GUICtrlCreateInput("9", 200, 72, 25, 21)
+	Global $Input1098098 = GUICtrlCreateInput("9", 202, 168, 25, 21)
 	GUICtrlSetCursor(-1, 5)
-	Global $Input87877 = GUICtrlCreateInput("9", 248, 72, 25, 21)
+	Global $Input87877 = GUICtrlCreateInput("9", 256, 168, 25, 21)
 	GUICtrlSetCursor(-1, 5)
-	Global $Label5 = GUICtrlCreateLabel("x", 234, 79, 9, 17)
-	Global $Edit1 = GUICtrlCreateEdit("", 334, 73, 161, 368)
+	Global $Label5 = GUICtrlCreateLabel("x", 237, 175, 9, 17)
+	Global $Edit1 = GUICtrlCreateEdit("", 342, 73, 161, 368)
 	GUICtrlSetData(-1, "")
 	GUICtrlSetState(-1, $GUI_HIDE)
 	Global $Button4 = GUICtrlCreateButton("Name File", 1, 416, 71, 25)
 	Global $Button5 = GUICtrlCreateButton("Seating Chart", 72, 416, 70, 25)
-	Global $Label6 = GUICtrlCreateLabel("Load:", 3, 401, 31, 17)
-	Global $Label7 = GUICtrlCreateLabel("*Student :", 334, 57, 150, 17)
+	Global $Label6 = GUICtrlCreateLabel("Load:", 3, 400, 31, 17)
+	Global $Label7 = GUICtrlCreateLabel("*Students :", 342, 56, 46, 17)
 	GUICtrlSetColor(-1, 0x0000FF)
 	GUICtrlSetState(-1, $GUI_HIDE)
-	Global $Button6 = GUICtrlCreateButton("Generate Form", 152, 104, 177, 49)
+	Global $Button6 = GUICtrlCreateButton("Generate Form", 155, 192, 177, 49)
+	Global $Label8 = GUICtrlCreateLabel("*Generate Chart With:", 195, 107, 113, 17)
+	GUICtrlSetColor(-1, 0x0000FF)
+	Global $Button176565 = GUICtrlCreateButton("IMPORTANT NAME FILE FORMAT INFO", 54, 0, 353, 17)
+	GUICtrlSetBkColor(-1, 0xFF0000)
+	GUICtrlSetState(-1, $GUI_HIDE)
 	GUISetState(@SW_SHOW)
-	#EndRegion ### Source=C:\Users\Austen\Desktop\SeatsMain.kxf
+	#EndRegion ### END Koda GUI section ###
 
 	While 1
 		Switch GUIGetMsg()
@@ -113,14 +120,19 @@ Func _GUIMain()
 				_FormGUI()
 			Case $Radio2
 				GUICtrlSetState($Edit1, $GUI_SHOW)
+				GUICtrlSetState($Button176565, $GUI_SHOW)
+				GUICtrlSetState($Label7, $GUI_SHOW)
 			Case $Radio1
 				GUICtrlSetState($Edit1, $GUI_HIDE)
+				GUICtrlSetState($Button176565, $GUI_HIDE)
+				GUICtrlSetState($Label7, $GUI_HIDE)
 		EndSwitch
 	WEnd
 EndFunc   ;==>_GUIMain
 
 
 Func _FormGUI()
+	ConsoleWrite('@@ (124) :(' & @MIN & ':' & @SEC & ') _FormGUI()' & @CR) ;### Function Trace
 	$bError = 0
 	$Timer = TimerInit()
 	#Region ### START Koda GUI section ### Form=C:\Users\Austen\Desktop\FormGUI.kxf
@@ -320,7 +332,7 @@ Func _FormGUI()
 
 	_FillChart("numbers")
 
-	ConsoleWrite(Int(TimerDiff($Timer)) & @CRLF) ;Write form creation speed to console/STDout Stream
+	ConsoleWrite("Time taken to generate form" & Int(TimerDiff($Timer)) & @CRLF) ;Write form creation speed to console/STDout Stream
 
 	While 1
 		Switch GUIGetMsg()
@@ -356,6 +368,7 @@ Func _FormGUI()
 EndFunc   ;==>_FormGUI
 
 Func _OptionsGUI()
+	ConsoleWrite('@@ (360) :(' & @MIN & ':' & @SEC & ') _OptionsGUI()' & @CR) ;### Function Trace
 	#Region Form=C:\Users\Austen\Desktop\SeatsOptions.kxf
 	Global $SeatsOptions = GUICreate("Seats - Options", 488, 122, 700, 471)
 	Global $Checkbox112 = GUICtrlCreateCheckbox("AutoUpdates", 0, 0, 84, 17)
@@ -395,6 +408,7 @@ Func _OptionsGUI()
 EndFunc   ;==>_OptionsGUI
 
 Func _AboutGUI()
+	ConsoleWrite('@@ (400) :(' & @MIN & ':' & @SEC & ') _AboutGUI()' & @CR) ;### Function Trace
 	Global $AboutMain = GUICreate("About!", 626, 177, 237, 222)
 	Global $Label24 = GUICtrlCreateLabel("All code, ideas, and GUI design by: Austen Lage", 139, 24, 347, 24)
 	GUICtrlSetFont(-1, 12, 400, 0, "MS Sans Serif")
@@ -427,15 +441,16 @@ Func _AboutGUI()
 EndFunc   ;==>_AboutGUI
 
 Func _Initialize()
+	ConsoleWrite('@@ (433) :(' & @MIN & ':' & @SEC & ') _Initialize()' & @CR) ;### Function Trace
 	If RegRead("HKEY_CURRENT_USER\Software\Seats", "FirstRun") = "true" Then
 		Return
 	Else
 		MsgBox($MB_ICONINFORMATION, "Welcome!", "Welcome, it looks like it is your first time running seats. If you need help please click the 'help' button in the top left corner.")
 		RegWrite("HKEY_CURRENT_USER\Software\Seats", "FirstRun", "REG_SZ", "true")
-		MsgBox(0, "", RegRead("HKEY_CURRENT_USER\Software\Seats", "FirstRun"))
 	EndIf
 EndFunc   ;==>_Initialize
 Func _ApplyOptions()
+	ConsoleWrite('@@ (443) :(' & @MIN & ':' & @SEC & ') _ApplyOptions()' & @CR) ;### Function Trace
 	If GUICtrlRead($Checkbox112) = $GUI_CHECKED Then
 		$sResult = 1
 	Else
@@ -449,6 +464,7 @@ Func _ApplyOptions()
 EndFunc   ;==>_ApplyOptions
 
 Func _HandleError($sFunction, $sError)
+	ConsoleWrite('@@ (457) :(' & @MIN & ':' & @SEC & ') _HandleError()' & @CR) ;### Function Trace
 	MsgBox($MB_ICONERROR, "SWEARING!", "The Gerbils didn't like that! :(" & @CRLF & @CRLF & _
 			"Function: " & $sFunction & @CRLF & @CRLF & _
 			"Description: " & $sError)
@@ -456,6 +472,7 @@ Func _HandleError($sFunction, $sError)
 EndFunc   ;==>_HandleError
 
 Func _SizeChart()
+	ConsoleWrite('@@ (465) :(' & @MIN & ':' & @SEC & ') _SizeChart()' & @CR) ;### Function Trace
 	Local $iHorizontle = GUICtrlRead($Input1098098)
 	Switch $iHorizontle
 		Case "1"
@@ -463,6 +480,7 @@ Func _SizeChart()
 EndFunc   ;==>_SizeChart
 
 Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $iHorizontal to the horizontal hiding function
+	ConsoleWrite('@@ (473) :(' & @MIN & ':' & @SEC & ') _HideDesksV()' & @CR) ;### Function Trace
 	;Horizontle Switch
 	Switch $iVertical
 		Case "1"
@@ -562,6 +580,7 @@ Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $i
 EndFunc   ;==>_HideDesksV
 
 Func _HideDesksH($iHorizontal) ;Hides desks horizontally
+	ConsoleWrite('@@ (573) :(' & @MIN & ':' & @SEC & ') _HideDesksH()' & @CR) ;### Function Trace
 	Switch $iHorizontal
 		Case "1"
 			For $i = 1 To 9
@@ -633,6 +652,7 @@ Func _HideDesksH($iHorizontal) ;Hides desks horizontally
 EndFunc   ;==>_HideDesksH
 
 Func _DeskGetState($i) ;Returns a coordinate array containing the state of each group control, so I can determine which seats to actually give a number or name to.
+	ConsoleWrite('@@ (645) :(' & @MIN & ':' & @SEC & ') _DeskGetState()' & @CR) ;### Function Trace
 	$FormCount[1][$i] = GUICtrlGetState($FormGroup[1][$i])
 	$FormCount[2][$i] = GUICtrlGetState($FormGroup[2][$i])
 	$FormCount[3][$i] = GUICtrlGetState($FormGroup[3][$i])
@@ -645,6 +665,7 @@ Func _DeskGetState($i) ;Returns a coordinate array containing the state of each 
 EndFunc   ;==>_DeskGetState
 
 Func _CountSeats() ;Gets total number of open seats on seating chart
+	ConsoleWrite('@@ (658) :(' & @MIN & ':' & @SEC & ') _CountSeats()' & @CR) ;### Function Trace
 	Local $iOpenSeats
 
 	For $i = 1 To 9
@@ -696,6 +717,7 @@ Func _CountSeats() ;Gets total number of open seats on seating chart
 EndFunc   ;==>_CountSeats
 
 Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
+	ConsoleWrite('@@ (710) :(' & @MIN & ':' & @SEC & ') _FillChart()' & @CR) ;### Function Trace
 	If $sOption = "numbers" Then
 		$iSeats = _CountSeats()
 		$aStudentNumbers = _RandomUnique($iSeats, 1, $iSeats, 1)
@@ -743,5 +765,6 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 EndFunc   ;==>_FillChart
 
 Func _DebugMsgBox($sText)
+	ConsoleWrite('@@ (758) :(' & @MIN & ':' & @SEC & ') _DebugMsgBox()' & @CR) ;### Function Trace
 	MsgBox(0, "Debug", $sText)
 EndFunc   ;==>_DebugMsgBox
