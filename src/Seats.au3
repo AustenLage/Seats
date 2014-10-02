@@ -761,10 +761,23 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 		Next
 		$SetCount = 1
-	EndIf
+	Else
+		$iSeats = _CountSeats()
+		$aStudentNumbers = _RandomUnique($iSeats, 1, $iSeats, 1)
+		Local $SetCount = 1
+		
+	
 EndFunc   ;==>_FillChart
 
 Func _DebugMsgBox($sText)
 	ConsoleWrite('@@ (758) :(' & @MIN & ':' & @SEC & ') _DebugMsgBox()' & @CR) ;### Function Trace
 	MsgBox(0, "Debug", $sText)
 EndFunc   ;==>_DebugMsgBox
+
+Func _CountStudents()
+ 	FileWrite(@TempDir & "\SeatsTemp\TempStudents.seats", GUICtrlRead($Edit1))
+ 	$iStudents = _FileCountLines(@TempDir & "\SeatsTemp\TempStudents.seats)
+ 	If @Error <> 0 Then
+ 		_HandleError(_CountStudents,"The temorary student file could not be accessed, or created! error #" & @error)
+ 	EndIf
+EndFunc
