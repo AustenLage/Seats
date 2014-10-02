@@ -4,20 +4,14 @@
 
 ##Features
 
-- Create organized seating charts
-- Create random seating charts
-- Exclude and include desks for odd arangements
-- List students that shouldn't be next to one another, for whatever reason
-- Add all students to a list, or simply use numbers and reference your class roster.
-- Print seating chart, or save to load and change later.
-- Automatic updates
+- Create organized seating charts                                                    | _Status_: 0% | _Priority_: Low
+- Create random seating charts                                                       | _Status_: 50% | _Priority_: Very High
+- Exclude and include desks for odd arangements                                      | _Status_: 0% | _Priority_: Medium
+- List students that shouldn't be next to one another.        | _Status_: 0% | _Priority_: Low
+- Add all students to a list for random placement, or simply use numbers and reference your class roster. | See 'Create Random Seating Charts'
+- Print seating chart, or save to load and change later.                             | _Status_: 0% | _Priority_: High
+- Automatic updates                                                                  | _Status_: 0% | _Priority_: Medium
 
-#FAQ
 
-*Want a feature that isn't preasent? Make a pull request!
-*Want to contribute code? Make a pull request!
-*Find a bug/issue/have a complaint? Post it as an issue!
 
-<Hr>
-
-If you have any questions _pertaining to the program, or any of its features_ please contact me at vortex_oxide@hotmail.com
+If you have any questions __pertaining to the program, or any of its features__ please contact me at vortex_oxide@hotmail.com
