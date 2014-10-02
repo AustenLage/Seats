@@ -78,7 +78,6 @@ Func _GUIMain()
 					$ExitGUI = GUICreate("Are You Sure?", 316, 254, 346, 262)
 					GUICtrlCreateGroup("", 9, 1, 297, 193)
 					$Label1908 = GUICtrlCreateLabel("Are you sure you would like to exit Seats?", 66, 88, 200, 17)
-
 					$Button12344 = GUICtrlCreateButton("&Yes", 73, 203, 75, 25)
 					$Button234234 = GUICtrlCreateButton("&No", 178, 203, 75, 25)
 					$Checkbox1998 = GUICtrlCreateCheckbox("Don't ask me again", 0, 232, 113, 17)
@@ -118,6 +117,17 @@ Func _GUIMain()
 				WinActivate($SeatsMain)
 			Case $Button6
 				_FormGUI()
+			Case $Button176565
+				MsgBox($MB_ICONINFORMATION,"IMPORTANT FORMAT INFO!","In order for your names to be parsed correctly" & @CRLF & _
+					"and to prevent multiple names on one seat" & @CRLF & _
+					"you must only have one name per line!" & @CRLF & _
+					"Example:" & @CRLF & _
+					"Austen Lage" & @CRLF & _
+					"Mrs. Potter" & @CRLF & _
+					"Jacob Mcilhenny" & @CRLF & _
+					& @CRLF & _
+					"If there are more students than the total capacity of the" & @CRLF & _
+					"chart dimensions, an exception will be thrown!"
 			Case $Radio2
 				GUICtrlSetState($Edit1, $GUI_SHOW)
 				GUICtrlSetState($Button176565, $GUI_SHOW)
@@ -780,6 +790,7 @@ Func _CountStudents()
  	If @Error <> 0 Then
  		_HandleError(_CountStudents,"The temorary student file could not be accessed, or created! error #" & @error)
  	EndIf
+ 	
 EndFunc
 
 Func _RegenerateChart()
