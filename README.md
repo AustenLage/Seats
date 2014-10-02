@@ -5,7 +5,7 @@
 #Features
 
 - Create organized seating charts                                                    | _Status_: 0% | _Priority_: Low
-- Create random seating charts                                                       | _Status_: 50% | _Priority_: Very High
+- Create random seating charts                                                       | _Status_: 70% | _Priority_: Very High
 - Exclude and include desks for odd arangements                                      | _Status_: 0% | _Priority_: Medium
 - List students that shouldn't be next to one another.        | _Status_: 0% | _Priority_: Low
 - Add all students to a list for random placement, or simply use numbers and reference your class roster. | See 'Create Random Seating Charts'
