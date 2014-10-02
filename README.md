@@ -10,12 +10,10 @@
 - Print seating chart, or save to load and change later.
 - Automatic updates
 <br>
-<hr>
-<br>
-<h2>FAQ</h2>
-<b>Want a feature that isn't preasent? Make a pull request!</b>
-<b>Want to contribute code? Make a pull request!</b>
-<b>Find a bug/issue/have a complaint? Post it as an issue!</b>
+<h1>FAQ</h1>
+-Want a feature that isn't preasent? Make a pull request!</b>
+-Want to contribute code? Make a pull request!</b>
+-Find a bug/issue/have a complaint? Post it as an issue!</b>
 <br>
 <hr>
 <br>
