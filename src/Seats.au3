@@ -781,3 +781,7 @@ Func _CountStudents()
  		_HandleError(_CountStudents,"The temorary student file could not be accessed, or created! error #" & @error)
  	EndIf
 EndFunc
+
+Func _RegenerateChart()
+	;;Call functions to regenerate chart without re-opening FormGUI
+EndFunc
