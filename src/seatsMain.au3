@@ -72,6 +72,10 @@ Func _GUIMain()
 	GUISetState(@SW_SHOW)
 	#EndRegion ### END Koda GUI section ###
 
+
+	GUICtrlSetData($Edit1, "1")
+	GUICtrlSetData($Edit1, GUICtrlRead($Edit1) & @CRLF & "2")
+
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
@@ -454,6 +458,57 @@ Func _AboutGUI()
 	WEnd
 	Return
 EndFunc   ;==>_AboutGUI
+
+Func _LoadGUI($sTitle)
+	#Region
+	Global $LoadGUI = GUICreate("Loading...", 466, 288, 403, 495)
+	Global $Edit1 = GUICtrlCreateEdit("", 48, 32, 377, 225, BitOR($ES_OEMCONVERT, $ES_READONLY, $ES_WANTRETURN))
+	GUICtrlSetData(-1, "Edit1")
+	GUICtrlSetCursor(-1, 7)
+	Global $Icon1 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 35, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon3 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 48, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon15 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 61, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon16 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 74, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon19 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 87, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon20 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 100, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon21 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 113, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon22 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 126, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon2 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 139, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon4 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 152, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon5 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 165, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon6 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 178, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon7 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 191, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon8 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 204, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon9 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 217, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Icon10 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 230, 13, 13)
+	GUICtrlSetState(-1, $GUI_HIDE)
+	Global $Label1337 = GUICtrlCreateLabel(" ", 0, 3, 464, 17, $SS_CENTER)
+	Global $Button1 = GUICtrlCreateButton("OK", 191, 261, 83, 24)
+	GUISetState(@SW_SHOW)
+	#EndRegion
+
+	While 1
+		Switch GUIGetMsg()
+			Case $GUI_EVENT_CLOSE
+				ExitLoop
+		EndSwitch
+	WEnd
+EndFunc   ;==>_LoadGUI
 
 Func _Initialize()
 	ConsoleWrite('@@ (454) :(' & @MIN & ':' & @SEC & ') _Initialize()' & @CR) ;### Function Trace
@@ -903,5 +958,3 @@ EndFunc   ;==>_RegenerateChart
 Func _DebugMsgBox($sText)
 	MsgBox(0, "Debug", $sText)
 EndFunc   ;==>_DebugMsgBox
-
-
