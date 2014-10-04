@@ -18,9 +18,9 @@
 #include <File.au3>
 #include <_Random.au3>
 
-ClipPut(@TempDir)
+Opt("GUICloseOnESC", 0)
 
-Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82], $aStudentNames[82], $bError
+Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82], $aStudentNames[82], $aLoadedNameFile[82], $bError, $Edit1337
 
 _Initialize()
 _GUIMain()
@@ -72,10 +72,6 @@ Func _GUIMain()
 	GUISetState(@SW_SHOW)
 	#EndRegion ### END Koda GUI section ###
 
-
-	GUICtrlSetData($Edit1, "1")
-	GUICtrlSetData($Edit1, GUICtrlRead($Edit1) & @CRLF & "2")
-
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
@@ -112,6 +108,17 @@ Func _GUIMain()
 				Else
 					Return
 				EndIf
+			Case $Button4
+				GUISetState(@SW_DISABLE, $SeatsMain)
+				Local $LoadNameFile = FileOpenDialog("Please select a names file to load", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir") & "\", "Text (*.txt;*.seats)", $FD_FILEMUSTEXIST)
+				If $LoadNameFile Then
+					_ParseNameFile($LoadNameFile)
+					;_ArrayDisplay($aLoadedNameFile) ;-Debug
+					For $i = 1 To UBound($aLoadedNameFile) - 1
+						GUICtrlSetData($Edit1, GUICtrlRead($Edit1) & @CRLF & $aLoadedNameFile[$i])
+					Next
+				EndIf
+				GUISetState(@SW_ENABLE, $SeatsMain)
 			Case $Button98776576
 				GUISetState(@SW_DISABLE, $SeatsMain)
 				_OptionsGUI()
@@ -123,7 +130,10 @@ Func _GUIMain()
 				GUISetState(@SW_ENABLE, $SeatsMain)
 				WinActivate($SeatsMain)
 			Case $Button6
+				GUISetState(@SW_DISABLE, $SeatsMain)
 				_FormGUI()
+				GUISetState(@SW_ENABLE, $SeatsMain)
+				WinActivate($SeatsMain)
 			Case $Button176565
 				MsgBox($MB_ICONINFORMATION, "IMPORTANT FORMAT INFO!", "In order for your names to be parsed correctly" & @CRLF & _
 						"and to prevent multiple names on one seat" & @CRLF & _
@@ -149,7 +159,7 @@ EndFunc   ;==>_GUIMain
 
 
 Func _FormGUI()
-	ConsoleWrite('@@ (145) :(' & @MIN & ':' & @SEC & ') _FormGUI()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (148) :(' & @MIN & ':' & @SEC & ') _FormGUI()' & @CR) ;### Function Trace
 	$bError = 0
 	$Timer = TimerInit()
 	#Region ### START Koda GUI section ### Form=C:\Users\Austen\Desktop\FormGUI.kxf
@@ -335,23 +345,17 @@ Func _FormGUI()
 	GUICtrlSetColor(-1, 0xFF0000)
 	GUICtrlCreateTabItem("")
 	Global $Button129843769826354 = GUICtrlCreateButton("Return to Main Screen", 770, 0, 113, 17)
-	Global $FormGUI_AccelTable[1][2] = [["^!+\", $MenuItem3]]
-	GUISetAccelerators($FormGUI_AccelTable)
-	GUISetState(@SW_SHOW)
+	GUISetState(@SW_HIDE)
 	#EndRegion ### END Koda GUI section ###
 
-	Global $Horizontle = GUICtrlRead($Input87877)
+	Global $Horizontal = GUICtrlRead($Input87877)
 	Global $Vertical = GUICtrlRead($Input1098098)
 
-	_HideDesksV($Vertical, $Horizontle)
+	_LoadGUI()
 
-	If GUICtrlRead($Radio1) = $GUI_CHECKED Then
-		_FillChart("numbers")
-	Else
-		_FillChart("names")
-	EndIf
+	GUISetState(@SW_SHOW, $FormGUI)
 
-	ConsoleWrite("Time taken to generate form: " & Int(TimerDiff($Timer)) & "ms" & @CRLF) ;Write form creation speed to console/STDout Stream
+	ConsoleWrite("Time taken to generate form: " & Int(TimerDiff($Timer)) & "ms" & @CRLF) ;Write form creation speed to console/STDout
 
 	While 1
 		Switch GUIGetMsg()
@@ -387,7 +391,7 @@ Func _FormGUI()
 EndFunc   ;==>_FormGUI
 
 Func _OptionsGUI()
-	ConsoleWrite('@@ (381) :(' & @MIN & ':' & @SEC & ') _OptionsGUI()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (378) :(' & @MIN & ':' & @SEC & ') _OptionsGUI()' & @CR) ;### Function Trace
 	#Region Form=C:\Users\Austen\Desktop\SeatsOptions.kxf
 	Global $SeatsOptions = GUICreate("Seats - Options", 488, 122, 700, 471)
 	Global $Checkbox112 = GUICtrlCreateCheckbox("AutoUpdates", 0, 0, 84, 17)
@@ -427,7 +431,7 @@ Func _OptionsGUI()
 EndFunc   ;==>_OptionsGUI
 
 Func _AboutGUI()
-	ConsoleWrite('@@ (421) :(' & @MIN & ':' & @SEC & ') _AboutGUI()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (418) :(' & @MIN & ':' & @SEC & ') _AboutGUI()' & @CR) ;### Function Trace
 	Global $AboutMain = GUICreate("About!", 626, 177, 237, 222)
 	Global $Label24 = GUICtrlCreateLabel("All code, ideas, and GUI design by: Austen Lage", 139, 24, 347, 24)
 	GUICtrlSetFont(-1, 12, 400, 0, "MS Sans Serif")
@@ -459,11 +463,12 @@ Func _AboutGUI()
 	Return
 EndFunc   ;==>_AboutGUI
 
-Func _LoadGUI($sTitle)
+Func _LoadGUI()
+	ConsoleWrite('@@ (451) :(' & @MIN & ':' & @SEC & ') _LoadGUI()' & @CR) ;### Function Trace
 	#Region
 	Global $LoadGUI = GUICreate("Loading...", 466, 288, 403, 495)
-	Global $Edit1 = GUICtrlCreateEdit("", 48, 32, 377, 225, BitOR($ES_OEMCONVERT, $ES_READONLY, $ES_WANTRETURN))
-	GUICtrlSetData(-1, "Edit1")
+	Global $Edit1337 = GUICtrlCreateEdit("", 48, 32, 377, 225, BitOR($ES_OEMCONVERT, $ES_READONLY, $ES_WANTRETURN))
+	GUICtrlSetData(-1, "0")
 	GUICtrlSetCursor(-1, 7)
 	Global $Icon1 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 35, 13, 13)
 	GUICtrlSetState(-1, $GUI_HIDE)
@@ -497,21 +502,36 @@ Func _LoadGUI($sTitle)
 	GUICtrlSetState(-1, $GUI_HIDE)
 	Global $Icon10 = GUICtrlCreateIcon("C:\Windows\System32\shell32.dll", -278, 34, 230, 13, 13)
 	GUICtrlSetState(-1, $GUI_HIDE)
-	Global $Label1337 = GUICtrlCreateLabel(" ", 0, 3, 464, 17, $SS_CENTER)
-	Global $Button1 = GUICtrlCreateButton("OK", 191, 261, 83, 24)
+	Global $Label1337 = GUICtrlCreateLabel("Generating form", 0, 3, 464, 17, $SS_CENTER)
+	Global $Button1337 = GUICtrlCreateButton("OK", 191, 261, 83, 24)
 	GUISetState(@SW_SHOW)
+	GUISetState(@SW_DISABLE)
 	#EndRegion
+
+	_HideDesksV($Vertical, $Horizontal)
+
+	If GUICtrlRead($Radio1) = $GUI_CHECKED Then
+		_FillChart("numbers")
+	Else
+		_FillChart("names")
+	EndIf
+
+	GUISetState(@SW_ENABLE)
 
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
-				ExitLoop
+				GUIDelete($LoadGUI)
+				Return
+			Case $Button1337
+				GUIDelete($LoadGUI)
+				Return
 		EndSwitch
 	WEnd
 EndFunc   ;==>_LoadGUI
 
 Func _Initialize()
-	ConsoleWrite('@@ (454) :(' & @MIN & ':' & @SEC & ') _Initialize()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (515) :(' & @MIN & ':' & @SEC & ') _Initialize()' & @CR) ;### Function Trace
 	If RegRead("HKEY_CURRENT_USER\Software\Seats", "FirstRun") = "true" Then
 		Return
 	Else
@@ -519,8 +539,9 @@ Func _Initialize()
 		RegWrite("HKEY_CURRENT_USER\Software\Seats", "FirstRun", "REG_SZ", "true")
 	EndIf
 EndFunc   ;==>_Initialize
+
 Func _ApplyOptions()
-	ConsoleWrite('@@ (463) :(' & @MIN & ':' & @SEC & ') _ApplyOptions()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (525) :(' & @MIN & ':' & @SEC & ') _ApplyOptions()' & @CR) ;### Function Trace
 	If GUICtrlRead($Checkbox112) = $GUI_CHECKED Then
 		$sResult = 1
 	Else
@@ -528,32 +549,34 @@ Func _ApplyOptions()
 	EndIf
 	RegWrite("HKEY_CURRENT_USER\Software\Seats", "BrowseDir", "REG_SZ", GUICtrlRead($Input10))
 	RegWrite("HKEY_CURRENT_USER\Software\Seats", "AutoUpdate", "REG_SZ", $sResult)
-	_DebugMsgBox(GUICtrlRead($Checkbox112))
 	GUIDelete($SeatsOptions)
 	Return
 EndFunc   ;==>_ApplyOptions
 
 Func _HandleError($sFunction, $sError)
-	ConsoleWrite('@@ (477) :(' & @MIN & ':' & @SEC & ') _HandleError()' & @CR) ;### Function Trace
-	MsgBox($MB_ICONERROR, "SWEARING!", "The Gerbils didn't like that! :(" & @CRLF & @CRLF & _
+	ConsoleWrite('@@ (538) :(' & @MIN & ':' & @SEC & ') _HandleError()' & @CR) ;### Function Trace
+	If Random(1, 2, 1) = 1 Then
+		_WriteLoading("ERROR - The gerbils had a cerebral aneurysm!")
+	Else
+		_WriteLoading("ERROR - The gerbils had a severe epileptic seizure!")
+	EndIf
+	MsgBox($MB_ICONERROR, "SWEARING!", "The gerbils didn't like that! :(" & @CRLF & @CRLF & _
 			"Function: " & $sFunction & @CRLF & @CRLF & _
 			"Description: " & $sError)
+	WinActivate($SeatsMain)
+	WinActivate($LoadGUI)
 	;;Error handling and logging, possibly send to google doc automatically?
 EndFunc   ;==>_HandleError
 
-Func _SizeChart()
-	ConsoleWrite('@@ (485) :(' & @MIN & ':' & @SEC & ') _SizeChart()' & @CR) ;### Function Trace
-	Local $iHorizontle = GUICtrlRead($Input1098098)
-	Switch $iHorizontle
-		Case "1"
-	EndSwitch
-EndFunc   ;==>_SizeChart
-
-Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $iHorizontal to the horizontal hiding function
-	ConsoleWrite('@@ (493) :(' & @MIN & ':' & @SEC & ') _HideDesksV()' & @CR) ;### Function Trace
-	;Horizontle Switch
+Func _HideDesksV($iVertical, $iHorizontal) ;Hides desks vertically and passes $iHorizontal to the horizontal hiding function
+	ConsoleWrite('@@ (554) :(' & @MIN & ':' & @SEC & ') _HideDesksV()' & @CR) ;### Function Trace
+	Sleep(225)
+	;Vertical Switch
 	Switch $iVertical
 		Case "1"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[2][$i], $GUI_HIDE)
@@ -563,11 +586,13 @@ Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $i
 				GUICtrlSetState($FormGroup[7][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[8][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
 				_DeskGetState($i)
 			Next
 			Return
 		Case "2"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[2][$i], $GUI_HIDE)
@@ -576,11 +601,14 @@ Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $i
 				GUICtrlSetState($FormGroup[7][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[8][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
 				_DeskGetState($i)
 			Next
 			Return
 		Case "3"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[2][$i], $GUI_HIDE)
@@ -588,56 +616,68 @@ Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $i
 				GUICtrlSetState($FormGroup[7][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[8][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
 				_DeskGetState($i)
 			Next
 			Return
 		Case "4"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[2][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[7][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[8][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
 				_DeskGetState($i)
 			Next
 			Return
 		Case "5"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[2][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[8][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
 				_DeskGetState($i)
 			Next
 			Return
 		Case "6"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[8][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
 				_DeskGetState($i)
 			Next
 			Return
 		Case "7"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
+				_HideDesksH($iHorizontal)
 				_DeskGetState($i)
 			Next
 			Return
 		Case "8"
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
-				_HideDesksH($iHorizontle)
 				_DeskGetState($i)
 			Next
 		Case "9"
-			_HideDesksH($iHorizontle)
+			_HideDesksH($iHorizontal)
+			_WriteLoading("Sizing chart vertically...")
+			Sleep(225)
 			For $i = 1 To 9
 				_DeskGetState($i)
 			Next
@@ -650,7 +690,9 @@ Func _HideDesksV($iVertical, $iHorizontle) ;Hides desks vertically and passes $i
 EndFunc   ;==>_HideDesksV
 
 Func _HideDesksH($iHorizontal) ;Hides desks horizontally
-	ConsoleWrite('@@ (593) :(' & @MIN & ':' & @SEC & ') _HideDesksH()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (655) :(' & @MIN & ':' & @SEC & ') _HideDesksH()' & @CR) ;### Function Trace
+	_WriteLoading("Sizing chart horizontally...")
+	Sleep(225)
 	Switch $iHorizontal
 		Case "1"
 			For $i = 1 To 9
@@ -722,7 +764,11 @@ Func _HideDesksH($iHorizontal) ;Hides desks horizontally
 EndFunc   ;==>_HideDesksH
 
 Func _DeskGetState($i) ;Returns a coordinate array containing the state of each group control, so I can determine which seats to actually give a number or name to.
-	ConsoleWrite('@@ (665) :(' & @MIN & ':' & @SEC & ') _DeskGetState()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (727) :(' & @MIN & ':' & @SEC & ') _DeskGetState()' & @CR) ;### Function Trace
+	If $i = 1 Then
+		_WriteLoading("Getting desk states...")
+		Sleep(225)
+	EndIf
 	$FormCount[1][$i] = GUICtrlGetState($FormGroup[1][$i])
 	$FormCount[2][$i] = GUICtrlGetState($FormGroup[2][$i])
 	$FormCount[3][$i] = GUICtrlGetState($FormGroup[3][$i])
@@ -735,9 +781,8 @@ Func _DeskGetState($i) ;Returns a coordinate array containing the state of each 
 EndFunc   ;==>_DeskGetState
 
 Func _CountSeats() ;Gets total number of open seats on seating chart
-	ConsoleWrite('@@ (678) :(' & @MIN & ':' & @SEC & ') _CountSeats()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (740) :(' & @MIN & ':' & @SEC & ') _CountSeats()' & @CR) ;### Function Trace
 	Local $iOpenSeats
-
 	For $i = 1 To 9
 		If $FormCount[1][$i] = 80 Then
 			$iOpenSeats = $iOpenSeats + 1
@@ -787,7 +832,9 @@ Func _CountSeats() ;Gets total number of open seats on seating chart
 EndFunc   ;==>_CountSeats
 
 Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
-	ConsoleWrite('@@ (730) :(' & @MIN & ':' & @SEC & ') _FillChart()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (792) :(' & @MIN & ':' & @SEC & ') _FillChart()' & @CR) ;### Function Trace
+	_WriteLoading("Filling chart...")
+	Sleep(225)
 	If $sOption = "numbers" Then
 		$iSeats = _CountSeats()
 		$aStudentNumbers = _RandomUnique($iSeats, 1, $iSeats, 1)
@@ -830,6 +877,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 				$SetCount = $SetCount + 1
 			EndIf
 		Next
+		_WriteLoading("Chart generation complete!")
 		$SetCount = 1
 	Else
 		$iSeats = _CountSeats()
@@ -851,7 +899,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 		For $i = 1 To 9
 			If $FormCount[1][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[1][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[1][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[1][$i], $aStudentNumbers[$SetCount])
@@ -860,7 +908,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[2][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[2][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[2][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[2][$i], $aStudentNumbers[$SetCount])
@@ -869,7 +917,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[3][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[3][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[3][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[3][$i], $aStudentNumbers[$SetCount])
@@ -878,7 +926,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[4][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[4][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[4][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[4][$i], $aStudentNumbers[$SetCount])
@@ -887,7 +935,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[5][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[5][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[5][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[5][$i], $aStudentNumbers[$SetCount])
@@ -896,7 +944,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[6][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[6][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[6][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[6][$i], $aStudentNumbers[$SetCount])
@@ -905,7 +953,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[7][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[7][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[7][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[7][$i], $aStudentNumbers[$SetCount])
@@ -914,7 +962,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[8][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[8][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[8][$i], "")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[8][$i], $aStudentNumbers[$SetCount])
@@ -923,7 +971,7 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 			EndIf
 			If $FormCount[9][$i] = "80" Then
 				If IsNumber($aStudentNumbers[$SetCount]) Then
-					GUICtrlSetData($FormGroup[9][$i], "EMPTY")
+					GUICtrlSetData($FormGroup[9][$i], "  ")
 					$SetCount = $SetCount + 1
 				Else
 					GUICtrlSetData($FormGroup[9][$i], $aStudentNumbers[$SetCount])
@@ -931,12 +979,13 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 				EndIf
 			EndIf
 		Next
+		_WriteLoading("Chart generation complete!")
 		$SetCount = 1
 	EndIf
 EndFunc   ;==>_FillChart
 
 Func _CountStudents()
-	ConsoleWrite('@@ (783) :(' & @MIN & ':' & @SEC & ') _CountStudents()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (941) :(' & @MIN & ':' & @SEC & ') _CountStudents()' & @CR) ;### Function Trace
 	DirCreate(@TempDir & "\SeatsTemp")
 	FileWrite(@TempDir & "\SeatsTemp\TempStudents.seats", GUICtrlRead($Edit1))
 	Local $iStudents = _FileCountLines(@TempDir & "\SeatsTemp\TempStudents.seats")
@@ -947,14 +996,31 @@ Func _CountStudents()
 EndFunc   ;==>_CountStudents
 
 Func _LoadStudents($sFilePath)
+	ConsoleWrite('@@ (952) :(' & @MIN & ':' & @SEC & ') _LoadStudents()' & @CR) ;### Function Trace
 	_FileReadToArray($sFilePath, $aStudentNames)
 EndFunc   ;==>_LoadStudents
 
 Func _RegenerateChart()
-	ConsoleWrite('@@ (792) :(' & @MIN & ':' & @SEC & ') _RegenerateChart()' & @CR) ;### Function Trace
+	ConsoleWrite('@@ (957) :(' & @MIN & ':' & @SEC & ') _RegenerateChart()' & @CR) ;### Function Trace
 	;;Call functions to regenerate chart without re-opening FormGUI
 EndFunc   ;==>_RegenerateChart
 
+Func _WriteLoading($sString) ;Write to loading GUI
+	ConsoleWrite('@@ (962) :(' & @MIN & ':' & @SEC & ') _WriteLoading()' & @CR) ;### Function Trace
+	If GUICtrlRead($Edit1337) = "0" Then
+		GUICtrlSetData($Edit1337, $sString)
+	Else
+		GUICtrlSetData($Edit1337, GUICtrlRead($Edit1337) & @CRLF & $sString)
+	EndIf
+EndFunc   ;==>_WriteLoading
+
+Func _ParseNameFile($sFilePath)
+	_FileReadToArray($sFilePath, $aLoadedNameFile)
+EndFunc   ;==>_ParseNameFile
+
 Func _DebugMsgBox($sText)
+	ConsoleWrite('@@ (971) :(' & @MIN & ':' & @SEC & ') _DebugMsgBox()' & @CR) ;### Function Trace
 	MsgBox(0, "Debug", $sText)
 EndFunc   ;==>_DebugMsgBox
+
+
