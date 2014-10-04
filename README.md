@@ -9,7 +9,7 @@ School project created for Mrs Potter's class. This program is meant to be used 
 - Exclude and include desks for odd arangements                                      | _Status_: 0% | _Priority_: Medium
 - List students that shouldn't be next to one another.        | _Status_: 0% | _Priority_: Low
 - Add all students to a list for random placement, or simply use numbers and reference your class roster. | See 'Create Random Seating Charts'
-- Print seating chart, or save to load and change later.                             | _Status_: 0% | _Priority_: High
+- Print seating chart, or save to load and change later.                             | _Status_: 25% | _Priority_: High
 - Automatic updates                                                                  | _Status_: 0% | _Priority_: Medium
 
 <hr>
