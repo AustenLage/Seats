@@ -1023,4 +1023,55 @@ Func _DebugMsgBox($sText)
 	MsgBox(0, "Debug", $sText)
 EndFunc   ;==>_DebugMsgBox
 
+Func _ParseChartFile($sFilePath)
+	_FileReadToArray($sFilePath, $aParsedChart)
+	If UBound($aParsedChart) > 81 Then
+		_HandleError("_ParseChartFile()","File is not formatted correctly!(too many lines)")
+		Return
+	EndIf
+	For $i = 1 to 9
+		$aStudentNumbers[1][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[2][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[3][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[4][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[5][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[6][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[7][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[8][$i] = $aParsedChart[$i]
+	Next
+	For $i = 1 to 9
+		$aStudentNumbers[9][$i] = $aParsedChart[$i]
+	Next
+EndFunc
 
+Func _SaveChart($sFilePath)
+	For $i = 1 to 9
+		$aParsedChart[$i] = $aStudentNumbers[1][$i]
+		
+	Next
+	Local $Count = 1
+	For $i = 10 to 18
+		$aParsedChart[$i] = $aStudentNumbers[2][$Count]
+		$Count += 1
+	Next
+	$Count = 1
+	For $i = 19 to 27
+		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$Count += 1
+	Next
+
+--NOT DONE--
