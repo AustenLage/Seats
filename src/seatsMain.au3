@@ -8,6 +8,9 @@
 
 #ce ----------------------------------------------------------------------------
 
+#AutoIt3Wrapper_Run_Au3Stripper=y
+
+
 #include <ButtonConstants.au3>
 #include <EditConstants.au3>
 #include <GUIConstantsEx.au3>
@@ -20,7 +23,7 @@
 
 Opt("GUICloseOnESC", 0)
 
-Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82], $aStudentNames[82], $aLoadedNameFile[82], $bError, $Edit1337
+Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82], $aStudentNames[82], $aLoadedNameFile[82], $aParsedChart[82], $bError, $Edit1337
 
 _Initialize()
 _GUIMain()
@@ -118,6 +121,16 @@ Func _GUIMain()
 						GUICtrlSetData($Edit1, GUICtrlRead($Edit1) & @CRLF & $aLoadedNameFile[$i])
 					Next
 				EndIf
+				WinActivate($SeatsMain)
+				GUISetState(@SW_ENABLE, $SeatsMain)
+			Case $Button5
+				GUISetState(@SW_DISABLE, $SeatsMain)
+				Local $LoadChartFile = FileOpenDialog("Please select a names file to load", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir") & "\", "Text (*.txt;*.seats)", $FD_FILEMUSTEXIST)
+				If $LoadChartFile Then
+					_ParseChartFile($LoadChartFile)
+					;_ArrayDisplay($aLoadedNameFile) ;-Debug
+				EndIf
+				WinActivate($SeatsMain)
 				GUISetState(@SW_ENABLE, $SeatsMain)
 			Case $Button98776576
 				GUISetState(@SW_DISABLE, $SeatsMain)
@@ -1026,52 +1039,85 @@ EndFunc   ;==>_DebugMsgBox
 Func _ParseChartFile($sFilePath)
 	_FileReadToArray($sFilePath, $aParsedChart)
 	If UBound($aParsedChart) > 81 Then
-		_HandleError("_ParseChartFile()","File is not formatted correctly!(too many lines)")
+		_HandleError("_ParseChartFile()", "File is not formatted correctly!(too many lines)")
 		Return
 	EndIf
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[1][$i] = $aParsedChart[$i]
 	Next
-	For $i = 1 to 9
-		$aStudentNumbers[2][$i] = $aParsedChart[$i]
+	Local $Count = 10
+	For $i = 1 To 9
+		$aStudentNumbers[2][$i] = $aParsedChart[$Count]
+		$Count += 1
 	Next
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[3][$i] = $aParsedChart[$i]
+		$Count += 1
 	Next
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[4][$i] = $aParsedChart[$i]
+		$Count += 1
 	Next
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[5][$i] = $aParsedChart[$i]
+		$Count += 1
 	Next
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[6][$i] = $aParsedChart[$i]
+		$Count += 1
 	Next
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[7][$i] = $aParsedChart[$i]
+		$Count += 1
 	Next
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[8][$i] = $aParsedChart[$i]
+		$Count += 1
 	Next
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aStudentNumbers[9][$i] = $aParsedChart[$i]
+		$Count += 1
 	Next
-EndFunc
+EndFunc   ;==>_ParseChartFile
 
 Func _SaveChart($sFilePath)
-	For $i = 1 to 9
+	For $i = 1 To 9
 		$aParsedChart[$i] = $aStudentNumbers[1][$i]
-		
 	Next
 	Local $Count = 1
-	For $i = 10 to 18
+	For $i = 10 To 18
 		$aParsedChart[$i] = $aStudentNumbers[2][$Count]
 		$Count += 1
 	Next
 	$Count = 1
-	For $i = 19 to 27
+	For $i = 19 To 27
+		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$Count += 1
+	Next
+	For $i = 28 To 36
+		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$Count += 1
+	Next
+	For $i = 37 To 45
+		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$Count += 1
+	Next
+	For $i = 46 To 54
+		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$Count += 1
+	Next
+	For $i = 55 To 63
+		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$Count += 1
+	Next
+	For $i = 64 To 72
+		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$Count += 1
+	Next
+	For $i = 73 To 81
 		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
 		$Count += 1
 	Next
 
---NOT DONE--
+	_FileWriteFromArray($sFilePath, $aParsedChart)
+EndFunc   ;==>_SaveChart
