@@ -8,8 +8,16 @@
 
 #ce ----------------------------------------------------------------------------
 
-#AutoIt3Wrapper_Run_Au3Stripper=y
-
+#AutoIt3Wrapper_If_Run
+    #AutoIt3Wrapper_Run_AU3Check=N
+    #AutoIt3Wrapper_Run_Tidy=N
+#Autoit3Wrapper_If_Compile
+    #AutoIt3Wrapper_Icon="Seats.ico"
+    #AutoIt3Wrapper_Run_AU3Check=N
+    #AutoIt3Wrapper_Run_Tidy=N
+    #AutoIt3Wrapper_Compression=4
+    #AutoIt3Wrapper_Res_Description="Generate seating charts with names, and numbers. Exclude certain seats, and many other useful functions!"
+#EndRegion
 
 #include <ButtonConstants.au3>
 #include <EditConstants.au3>
