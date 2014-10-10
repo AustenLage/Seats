@@ -1091,42 +1091,42 @@ EndFunc   ;==>_ParseChartFile
 
 Func _SaveChart($sFilePath)
 	For $i = 1 To 9
-		$aParsedChart[$i] = $aStudentNumbers[1][$i]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[1][$i])
 	Next
 	Local $Count = 1
 	For $i = 10 To 18
-		$aParsedChart[$i] = $aStudentNumbers[2][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[2][$Count])
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 19 To 27
-		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[3][$Count])
 		$Count += 1
 	Next
 	For $i = 28 To 36
-		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[4][$Count])
 		$Count += 1
 	Next
 	For $i = 37 To 45
-		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[5][$Count])
 		$Count += 1
 	Next
 	For $i = 46 To 54
-		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[6][$Count])
 		$Count += 1
 	Next
 	For $i = 55 To 63
-		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[7][$Count])
 		$Count += 1
 	Next
 	For $i = 64 To 72
-		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[8][$Count])
 		$Count += 1
 	Next
 	For $i = 73 To 81
-		$aParsedChart[$i] = $aStudentNumbers[3][$Count]
+		$aParsedChart[$i] = GUICtrlRead($FormGUI[9][$Count])
 		$Count += 1
 	Next
 
-	_FileWriteFromArray($sFilePath, $aParsedChart)
+	_FileWriteFromArray($sFilePath, $aParsedChart,1)
 EndFunc   ;==>_SaveChart
