@@ -485,7 +485,7 @@ Func _AboutGUI()
 	Return
 EndFunc   ;==>_AboutGUI
 
-Func _LoadGUI()
+Func _LoadGUI($sOption) ;$Option = "Generate" OR "Load"
 	ConsoleWrite('@@ (451) :(' & @MIN & ':' & @SEC & ') _LoadGUI()' & @CR) ;### Function Trace
 	#Region
 	Global $LoadGUI = GUICreate("Loading...", 466, 288, 403, 495)
@@ -529,7 +529,9 @@ Func _LoadGUI()
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE)
 	#EndRegion
-
+	
+	Switch $sOption
+	Case "Generate"
 	_HideDesksV($Vertical, $Horizontal)
 
 	If GUICtrlRead($Radio1) = $GUI_CHECKED Then
@@ -537,7 +539,9 @@ Func _LoadGUI()
 	Else
 		_FillChart("names")
 	EndIf
-
+	Case "Load"
+		;;Do stuff to load seating chart file
+	EndSwitch
 	GUISetState(@SW_ENABLE)
 
 	While 1
