@@ -9,16 +9,16 @@
 #ce ----------------------------------------------------------------------------
 
 #AutoIt3Wrapper_If_Run
-    #AutoIt3Wrapper_Run_AU3Check=Y
-    #AutoIt3Wrapper_Run_Tidy=N
+	#AutoIt3Wrapper_Run_AU3Check=Y
+	#AutoIt3Wrapper_Run_Tidy=N
 #Autoit3Wrapper_If_Compile
-    #AutoIt3Wrapper_Icon="Seats.ico"
-    #AutoIt3Wrapper_Run_AU3Stripper=Y
-    #AutoIt3Wrapper_Run_AU3Check=Y
-    #AutoIt3Wrapper_Run_Tidy=Y
-    #AutoIt3Wrapper_Compression=4
-    #AutoIt3Wrapper_Res_Description="Generate seating charts with names, and numbers. Exclude certain seats, and many other useful functions!"
-#EndRegion
+	#AutoIt3Wrapper_Icon="Seats.ico"
+	#AutoIt3Wrapper_Run_AU3Stripper=Y
+	#AutoIt3Wrapper_Run_AU3Check=Y
+	#AutoIt3Wrapper_Run_Tidy=Y
+	#AutoIt3Wrapper_Compression=4
+	#AutoIt3Wrapper_Res_Description="Generate seating charts with names, and numbers. Exclude certain seats, and many other useful functions!"
+#AutoIt3wrapper_EndIf
 
 #include <ButtonConstants.au3>
 #include <EditConstants.au3>
@@ -32,7 +32,7 @@
 
 Opt("GUICloseOnESC", 0)
 
-Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[82], $aStudentNames[82], $aLoadedNameFile[82], $aParsedChart[82], $bError, $Edit1337
+Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[10][82], $aStudentNames[82], $aLoadedNameFile[82], $aParsedChart[82], $bError, $Edit1337
 
 _Initialize()
 _GUIMain()
@@ -122,11 +122,14 @@ Func _GUIMain()
 				EndIf
 			Case $Button4
 				GUISetState(@SW_DISABLE, $SeatsMain)
-				Local $LoadNameFile = FileOpenDialog("Please select a names file to load", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir") & "\", "Text (*.txt;*.seats)", $FD_FILEMUSTEXIST)
+				Global $LoadNameFile = FileOpenDialog("Please select a names file to load", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir") & "\", "Text (*.txt;*.seats)", $FD_FILEMUSTEXIST)
 				If $LoadNameFile Then
 					_ParseNameFile($LoadNameFile)
 					;_ArrayDisplay($aLoadedNameFile) ;-Debug
 					For $i = 1 To UBound($aLoadedNameFile) - 1
+						If $i = 1 Then
+							GUICtrlSetData($Edit1, $aLoadedNameFile[$i])
+						EndIf
 						GUICtrlSetData($Edit1, GUICtrlRead($Edit1) & @CRLF & $aLoadedNameFile[$i])
 					Next
 				EndIf
@@ -134,11 +137,8 @@ Func _GUIMain()
 				GUISetState(@SW_ENABLE, $SeatsMain)
 			Case $Button5
 				GUISetState(@SW_DISABLE, $SeatsMain)
-				Local $LoadChartFile = FileOpenDialog("Please select a names file to load", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir") & "\", "Text (*.txt;*.seats)", $FD_FILEMUSTEXIST)
-				If $LoadChartFile Then
-					_ParseChartFile($LoadChartFile)
-					;_ArrayDisplay($aLoadedNameFile) ;-Debug
-				EndIf
+				Global $LoadChartFile = FileOpenDialog("Please select a names file to load", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir") & "\", "Text (*.txt;*.seats)", $FD_FILEMUSTEXIST)
+				_FormGUI("Load")
 				WinActivate($SeatsMain)
 				GUISetState(@SW_ENABLE, $SeatsMain)
 			Case $Button98776576
@@ -153,6 +153,7 @@ Func _GUIMain()
 				WinActivate($SeatsMain)
 			Case $Button6
 				GUISetState(@SW_DISABLE, $SeatsMain)
+				$IsCreate = 1
 				_FormGUI()
 				GUISetState(@SW_ENABLE, $SeatsMain)
 				WinActivate($SeatsMain)
@@ -180,7 +181,7 @@ Func _GUIMain()
 EndFunc   ;==>_GUIMain
 
 
-Func _FormGUI()
+Func _FormGUI($Option)
 	ConsoleWrite('@@ (148) :(' & @MIN & ':' & @SEC & ') _FormGUI()' & @CR) ;### Function Trace
 	$bError = 0
 	$Timer = TimerInit()
@@ -373,11 +374,17 @@ Func _FormGUI()
 	Global $Horizontal = GUICtrlRead($Input87877)
 	Global $Vertical = GUICtrlRead($Input1098098)
 
-	_LoadGUI()
+	If $Option = "Generate" Then
+		_LoadGUI("Generate")
+	Else
+		_LoadGUI("Load")
+	EndIf
 
 	GUISetState(@SW_SHOW, $FormGUI)
 
 	ConsoleWrite("Time taken to generate form: " & Int(TimerDiff($Timer)) & "ms" & @CRLF) ;Write form creation speed to console/STDout
+
+	$IsCreate = 0
 
 	While 1
 		Switch GUIGetMsg()
@@ -529,19 +536,21 @@ Func _LoadGUI($sOption) ;$Option = "Generate" OR "Load"
 	GUISetState(@SW_SHOW)
 	GUISetState(@SW_DISABLE)
 	#EndRegion
-	
-	Switch $sOption
-	Case "Generate"
-	_HideDesksV($Vertical, $Horizontal)
 
-	If GUICtrlRead($Radio1) = $GUI_CHECKED Then
-		_FillChart("numbers")
-	Else
-		_FillChart("names")
-	EndIf
-	Case "Load"
-		;;Do stuff to load seating chart file
+	Switch $sOption
+		Case "Generate"
+			_HideDesksV($Vertical, $Horizontal)
+
+			If GUICtrlRead($Radio1) = $GUI_CHECKED Then
+				_FillChart("numbers")
+			Else
+				_FillChart("names")
+			EndIf
+		Case "Load"
+			_ParseChartFile($LoadChartFile)
+			_LoadChart()
 	EndSwitch
+
 	GUISetState(@SW_ENABLE)
 
 	While 1
@@ -1050,6 +1059,8 @@ Func _DebugMsgBox($sText)
 EndFunc   ;==>_DebugMsgBox
 
 Func _ParseChartFile($sFilePath)
+	_WriteLoading("Parsing chart from file...")
+	Sleep(100)
 	_FileReadToArray($sFilePath, $aParsedChart)
 	If UBound($aParsedChart) > 81 Then
 		_HandleError("_ParseChartFile()", "File is not formatted correctly!(too many lines)")
@@ -1093,6 +1104,70 @@ Func _ParseChartFile($sFilePath)
 	Next
 EndFunc   ;==>_ParseChartFile
 
+Func _LoadChart()
+	_WriteLoading("Loading chart...")
+	Sleep(250)
+	For $i = 1 To 9
+		If $aStudentNumbers[1][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[1][$i], $aStudentNumbers[1][$i])
+		EndIf
+		If $aStudentNumbers[1][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[1][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[2][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[2][$i], $aStudentNumbers[2][$i])
+		EndIf
+		If $aStudentNumbers[2][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[2][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[3][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[3][$i], $aStudentNumbers[3][$i])
+		EndIf
+		If $aStudentNumbers[3][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[3][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[4][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[4][$i], $aStudentNumbers[4][$i])
+		EndIf
+		If $aStudentNumbers[4][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[4][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[5][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[5][$i], $aStudentNumbers[5][$i])
+		EndIf
+		If $aStudentNumbers[5][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[5][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[6][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[6][$i], $aStudentNumbers[6][$i])
+		EndIf
+		If $aStudentNumbers[6][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[6][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[7][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[7][$i], $aStudentNumbers[7][$i])
+		EndIf
+		If $aStudentNumbers[7][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[7][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[8][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[8][$i], $aStudentNumbers[8][$i])
+		EndIf
+		If $aStudentNumbers[8][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[8][$i], $GUI_HIDE)
+		EndIf
+		If $aStudentNumbers[9][$i] <> "hidden" Then
+			GUICtrlSetData($FormGroup[9][$i], $aStudentNumbers[9][$i])
+		EndIf
+		If $aStudentNumbers[9][$i] = "hidden" Then
+			GUICtrlSetState($FormGroup[9][$i], $GUI_HIDE)
+		EndIf
+	Next
+	_WriteLoading("Cleaning up...")
+	Sleep(120)
+	_WriteLoading("Done!")
+EndFunc   ;==>_LoadChart
+
 Func _SaveChart($sFilePath)
 	For $i = 1 To 9
 		$aParsedChart[$i] = GUICtrlRead($FormGUI[1][$i])
@@ -1132,5 +1207,5 @@ Func _SaveChart($sFilePath)
 		$Count += 1
 	Next
 
-	_FileWriteFromArray($sFilePath, $aParsedChart,1)
+	_FileWriteFromArray($sFilePath, $aParsedChart, 1)
 EndFunc   ;==>_SaveChart
