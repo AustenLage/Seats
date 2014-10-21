@@ -155,12 +155,13 @@ Func _GUIMain()
 				GUISetState(@SW_ENABLE, $SeatsMain)
 				WinActivate($SeatsMain)
 			Case $Button6
-				GUISetState(@SW_DISABLE, $SeatsMain)
+				GUISetState(@SW_HIDE, $SeatsMain)
 				$IsCreate = 1
 				_FormGUI("Generate")
-				GUISetState(@SW_ENABLE, $SeatsMain)
+				GUISetState(@SW_SHOW, $SeatsMain)
 				WinActivate($SeatsMain)
 			Case $Button176565
+				GUISetState(@SW_DISABLE, $SeatsMain)
 				MsgBox($MB_ICONINFORMATION, "IMPORTANT FORMAT INFO!", "In order for your names to be parsed correctly" & @CRLF & _
 						"and to prevent multiple names on one seat" & @CRLF & _
 						"you must only have one name per line!" & @CRLF & _
@@ -172,6 +173,8 @@ Func _GUIMain()
 						@CRLF & _
 						"If there are more students than the total capacity of the" & @CRLF & _
 						"chart dimensions, an exception will be thrown!")
+				WinActivate($SeatsMain)
+				GUISetState(@SW_ENABLE, $SeatsMain)
 			Case $Radio2
 				GUICtrlSetState($Edit1, $GUI_SHOW)
 				GUICtrlSetState($Button176565, $GUI_SHOW)
@@ -387,8 +390,6 @@ Func _FormGUI($Option)
 
 	ConsoleWrite("Time taken to generate form: " & Int(TimerDiff($Timer)) & "ms" & @CRLF) ;Write form creation speed to console/STDout
 
-	$i = 0
-
 	While 1
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
@@ -453,6 +454,9 @@ Func _OptionsGUI()
 			Case $GUI_EVENT_CLOSE
 				GUIDelete($SeatsOptions)
 				ExitLoop
+			Case $Button10
+				GUICtrlSetState($Checkbox112, $GUI_CHECKED)
+				GUICtrlSetData($Input10, @DesktopDir)
 			Case $Button11
 				GUIDelete($SeatsOptions)
 				ExitLoop
@@ -462,8 +466,12 @@ Func _OptionsGUI()
 				_ApplyOptions()
 				ExitLoop
 			Case $Button14
-				$BrowseDir = FileSelectFolder("Please select your default save directory", @DesktopDir)
+				GUISetState(@SW_DISABLE, $SeatsOptions)
+				$BrowseDir = FileSelectFolder("Please select your default browse directory", @DesktopDir)
 				GUICtrlSetData($Input10, $BrowseDir)
+				WinActivate($SeatsMain)
+				WinActivate($SeatsOptions)
+				GUISetState(@SW_ENABLE, $SeatsOptions)
 			Case $Button13
 				GUICtrlSetState($Input10, $GUI_DISABLE)
 				GUICtrlSetState($Checkbox112, $GUI_DISABLE)
@@ -567,8 +575,6 @@ Func _LoadGUI($sOption) ;$Option = "Generate" OR "Load"
 			_LoadChart()
 	EndSwitch
 
-	$i = 0
-
 	GUISetState(@SW_ENABLE)
 
 	While 1
@@ -586,10 +592,19 @@ EndFunc   ;==>_LoadGUI
 Func _Initialize()
 	ConsoleWrite('@@ (515) :(' & @MIN & ':' & @SEC & ') _Initialize()' & @CR) ;### Function Trace
 	If RegRead("HKEY_CURRENT_USER\Software\Seats", "FirstRun") = "true" Then
+		If RegRead("HKEY_CURRENT_USER\Software\Seats", "AutoUpdate") = 1 Then
+			If @Compiled Then
+				RunWait(RegRead("HKEY_CURRENT_USER\Software\Seats", "InstallDir" & "\SeatsUpdater.exe"))
+			Else
+				RunWait(@DesktopDir & "C:\Users\Austen\Desktop\Seats.git\trunk\src\updaterMain.exe")
+			EndIf
+		EndIf
 		Return
 	Else
 		MsgBox($MB_ICONINFORMATION, "Welcome!", "Welcome, it looks like it is your first time running seats. If you need help please click the 'help' button in the top left corner.")
 		RegWrite("HKEY_CURRENT_USER\Software\Seats", "FirstRun", "REG_SZ", "true")
+		RegWrite("HKEY_CURRENT_USER\Software\Seats", "BrowseDir", "REG_SZ", @DesktopDir)
+		RegWrite("HKEY_CURRENT_USER\Software\Seats", "AutoUpdate", "REG_SZ", 1)
 	EndIf
 EndFunc   ;==>_Initialize
 
@@ -883,15 +898,14 @@ Func _CountSeats() ;Gets total number of open seats on seating chart
 EndFunc   ;==>_CountSeats
 
 Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
-
 	ConsoleWrite('@@ (792) :(' & @MIN & ':' & @SEC & ') _FillChart()' & @CR) ;### Function Trace
 	_WriteLoading("Filling chart...")
 	Sleep(225)
 	If $sOption = "numbers" Then
 		$iSeats = _CountSeats()
 		$aStudentNumbers = _RandomUnique($iSeats, 1, $iSeats, 1)
-		Local $SetCount = 1
 		For $i = 1 To 9
+			Local $SetCount = 1
 			If $FormCount[1][$i] = "80" Then
 				GUICtrlSetData($FormGroup[1][$i], $aStudentNumbers[$SetCount])
 				$SetCount = $SetCount + 1
@@ -909,8 +923,12 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 				$SetCount = $SetCount + 1
 			EndIf
 			If $FormCount[5][$i] = "80" Then
-				GUICtrlSetData($FormGroup[5][$i], $aStudentNumbers[$SetCount])
-				$SetCount = $SetCount + 1
+				If $Horizontal And $Vertical = 1 Then
+					GUICtrlSetData($FormGroup[5][$i], "1")
+				Else
+					GUICtrlSetData($FormGroup[5][$i], $aStudentNumbers[$SetCount])
+					$SetCount = $SetCount + 1
+				EndIf
 			EndIf
 			If $FormCount[6][$i] = "80" Then
 				GUICtrlSetData($FormGroup[6][$i], $aStudentNumbers[$SetCount])
