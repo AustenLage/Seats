@@ -4,9 +4,19 @@
 	Author:         Austen Lage
 
 	Script Function:
-	Generate Seating Chart
+	Generate Seating Charts
 
 #ce ----------------------------------------------------------------------------
+
+#include <ButtonConstants.au3>
+#include <EditConstants.au3>
+#include <GUIConstantsEx.au3>
+#include <StaticConstants.au3>
+#include <WindowsConstants.au3>
+#include <MsgBoxConstants.au3>
+#include <Array.au3>
+#include <File.au3>
+#include <_Random.au3>
 
 #AutoIt3Wrapper_If_Run
 	#AutoIt3Wrapper_Run_AU3Check=Y
@@ -21,19 +31,11 @@
 	#AutoIt3Wrapper_Res_Description="Seats - Seating Chart Generator"
 #AutoIt3wrapper_EndIf
 
-#include <ButtonConstants.au3>
-#include <EditConstants.au3>
-#include <GUIConstantsEx.au3>
-#include <StaticConstants.au3>
-#include <WindowsConstants.au3>
-#include <MsgBoxConstants.au3>
-#include <Array.au3>
-#include <File.au3>
-#include <_Random.au3>
-
 Opt("GUICloseOnESC", 0)
 
 Global $FormGroup[10][10], $FormCount[10][10], $aStudentNumbers[10][82], $aStudentNames[82], $aLoadedStudentNames[10][10], $aLoadedNameFile[82], $aParsedChart[82], $LoadIcon[20], $bError, $Edit1337, $FormGUI
+
+Global $ScriptVersion = "b1.0"
 
 _Initialize()
 _GUIMain()
@@ -591,12 +593,16 @@ EndFunc   ;==>_LoadGUI
 
 Func _Initialize()
 	ConsoleWrite('@@ (515) :(' & @MIN & ':' & @SEC & ') _Initialize()' & @CR) ;### Function Trace
+	RegWrite("HKEY_CURRENT_USER\Software\Seats", "ScriptVersion", "REG_SZ", $ScriptVersion)
+	RegWrite("HKEY_CURRENT_USER\Software\Seats", "InstallDir", "REG_SZ", @ScriptDir)
 	If RegRead("HKEY_CURRENT_USER\Software\Seats", "FirstRun") = "true" Then
 		If RegRead("HKEY_CURRENT_USER\Software\Seats", "AutoUpdate") = 1 Then
 			If @Compiled Then
-				RunWait(RegRead("HKEY_CURRENT_USER\Software\Seats", "InstallDir" & "\SeatsUpdater.exe"))
+				RunWait(@ScriptDir & "\SeatsUpdater.exe")
+				Return
 			Else
 				RunWait(@DesktopDir & "C:\Users\Austen\Desktop\Seats.git\trunk\src\updaterMain.exe")
+				Return
 			EndIf
 		EndIf
 		Return
@@ -904,8 +910,8 @@ Func _FillChart($sOption) ;$sOption ("Names" or "Numbers")
 	If $sOption = "numbers" Then
 		$iSeats = _CountSeats()
 		$aStudentNumbers = _RandomUnique($iSeats, 1, $iSeats, 1)
+		Local $SetCount = 1
 		For $i = 1 To 9
-			Local $SetCount = 1
 			If $FormCount[1][$i] = "80" Then
 				GUICtrlSetData($FormGroup[1][$i], $aStudentNumbers[$SetCount])
 				$SetCount = $SetCount + 1
