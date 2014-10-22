@@ -11,6 +11,8 @@ School project created for Mrs Potter's class. This program is meant to be used 
 - Automatic updates                                                                  | _Status_: 100% | _Priority_: Medium
 - Installer                                                                          | _Status_: 100% | _Priority_: Medium
 
+Possibly import student names from Skyward... <b>POSSIBLY!</b>
+
 <hr>
 
 If you have any questions __pertaining to the program, or any of its features__ please contact me at vortex_oxide@hotmail.com
