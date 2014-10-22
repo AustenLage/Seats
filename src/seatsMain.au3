@@ -23,7 +23,7 @@
 	#AutoIt3Wrapper_Run_Tidy=N
 #Autoit3Wrapper_If_Compile
 	#AutoIt3Wrapper_OutFile="Seats.exe"
-	#AutoIt3Wrapper_Icon="C:\Users\Austen\Desktop\SeatsCompile\Seats.ico"
+	#AutoIt3Wrapper_Icon="C:\Users\Austen\Desktop\SeatsCompile\SeatsIcon.ico"
 	#AutoIt3Wrapper_Run_AU3Stripper=Y
 	#AutoIt3Wrapper_Run_AU3Check=Y
 	#AutoIt3Wrapper_Run_Tidy=Y
@@ -409,7 +409,12 @@ Func _FormGUI($Option)
 					ExitLoop
 				EndIf
 			Case $MenuItem3
-				_SaveChart(FileSaveDialog("Save chart file", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir"), "Text (*.txt;*.seats)"))
+				$SaveDir = FileSaveDialog("Save chart file", RegRead("HKEY_CURRENT_USER\Software\Seats", "BrowseDir"), "Text (*.txt;*.seats)")
+				If $SaveDir Then
+					_SaveChart($SaveDir)
+				Else
+					ContinueLoop
+				EndIf
 			Case $MenuItem5
 				$iMessage = MsgBox(4, "Are You Sure?", "Are you sure you would like to exit this page?" & @CRLF & _
 						"Unsaved seating charts will be lost!")
@@ -1212,48 +1217,85 @@ EndFunc   ;==>_LoadChart
 
 Func _SaveChart($sFilePath)
 	For $i = 1 To 9
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[1][$i])
+		If GUICtrlGetState($FormGroup[1][$i]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[1][$i])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 	Next
 	Local $Count = 1
 	For $i = 10 To 18
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[2][$Count])
+		If GUICtrlGetState($FormGroup[2][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[2][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 19 To 27
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[3][$Count])
+		If GUICtrlGetState($FormGroup[3][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[3][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 28 To 36
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[4][$Count])
+		If GUICtrlGetState($FormGroup[4][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[4][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 37 To 45
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[5][$Count])
+		If GUICtrlGetState($FormGroup[5][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[5][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 46 To 54
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[6][$Count])
+		If GUICtrlGetState($FormGroup[6][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[6][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 55 To 63
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[7][$Count])
+		If GUICtrlGetState($FormGroup[7][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[7][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 64 To 72
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[8][$Count])
+		If GUICtrlGetState($FormGroup[8][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[8][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 	$Count = 1
 	For $i = 73 To 81
-		$aParsedChart[$i] = GUICtrlRead($FormGroup[9][$Count])
+		If GUICtrlGetState($FormGroup[9][$Count]) = 80 Then
+			$aParsedChart[$i] = GUICtrlRead($FormGroup[9][$Count])
+		Else
+			$aParsedChart[$i] = "hidden"
+		EndIf
 		$Count += 1
 	Next
 
 	_FileWriteFromArray($sFilePath, $aParsedChart, 1)
 EndFunc   ;==>_SaveChart
+
