@@ -14,6 +14,7 @@
 #include <StaticConstants.au3>
 #include <WindowsConstants.au3>
 #include <MsgBoxConstants.au3>
+#include <ScreenCapture.au3>
 #include <Array.au3>
 #include <File.au3>
 #include <_Random.au3>
@@ -198,8 +199,7 @@ Func _FormGUI($Option)
 		Global $FormGUI = GUICreate("Seating Chart", 896, 575, 348, 135, BitOR($GUI_SS_DEFAULT_GUI, $WS_SIZEBOX, $WS_THICKFRAME), $WS_EX_WINDOWEDGE)
 		Global $MenuItem1 = GUICtrlCreateMenu("&File")
 		Global $MenuItem3 = GUICtrlCreateMenuItem("Save Seating Chart", $MenuItem1)
-		Global $MenuItem4 = GUICtrlCreateMenuItem("Save Names File", $MenuItem1)
-		Global $MenuItem6 = GUICtrlCreateMenuItem("Regenerate Chart", $MenuItem1)
+		Global $MenuItem8 = GUICtrlCreateMenuItem("Save Seating Chart As Image (Can't load)", $MenuItem1)
 		Global $MenuItem5 = GUICtrlCreateMenuItem("Return To Menu Screen", $MenuItem1)
 		Global $PageControl1 = GUICtrlCreateTab(10, 0, 875, 551)
 		GUICtrlSetResizing(-1, $GUI_DOCKAUTO + $GUI_DOCKLEFT + $GUI_DOCKRIGHT + $GUI_DOCKTOP + $GUI_DOCKBOTTOM + $GUI_DOCKWIDTH + $GUI_DOCKHEIGHT)
@@ -390,7 +390,7 @@ Func _FormGUI($Option)
 
 	GUISetState(@SW_SHOW, $FormGUI)
 
-	ConsoleWrite("Time taken to generate form: " & Int(TimerDiff($Timer)) & "ms" & @CRLF) ;Write form creation speed to console/STDout
+	;ConsoleWrite("Time taken to generate form: " & Int(TimerDiff($Timer)) & "ms" & @CRLF) ;Write form creation speed to console/STDout
 
 	While 1
 		Switch GUIGetMsg()
@@ -1072,6 +1072,7 @@ Func _CountStudents()
 	Local $iStudents = _FileCountLines(@TempDir & "\SeatsTemp\TempStudents.seats")
 	If @error <> 0 Then
 		_HandleError("_CountStudents()", "The temorary student file could not be accessed, or created! error #" & @error)
+		Return
 	EndIf
 	Return $iStudents
 EndFunc   ;==>_CountStudents
@@ -1298,4 +1299,3 @@ Func _SaveChart($sFilePath)
 
 	_FileWriteFromArray($sFilePath, $aParsedChart, 1)
 EndFunc   ;==>_SaveChart
-
